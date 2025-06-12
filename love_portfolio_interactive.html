@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Love Portfolio 📈❤️</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background-color: #fff8f3;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #chart-container {
+      width: 80%;
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+    }
+    .form-group {
+      margin: 10px 0;
+    }
+    input {
+      padding: 10px;
+      margin: 0 5px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .ticker {
+      font-size: 18px;
+      background-color: #ffe0d3;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ticker">LOVE +387% | HUGS issuing emotional dividends | $US2 at all-time highs</div>
+  <h1>Our Love Portfolio 📈❤️</h1>
+
+  <div id="chart-container">
+    <canvas id="loveChart"></canvas>
+  </div>
+
+  <div class="form-group">
+    <input type="date" id="eventDate">
+    <input type="text" id="eventDesc" placeholder="Event description">
+    <input type="number" id="eventValue" placeholder="Change in love value">
+    <button onclick="addEvent()">Add to Chart</button>
+  </div>
+
+  <div class="form-group">
+    <button onclick="undoEvent()">Undo Last</button>
+    <button onclick="clearAll()">Clear All</button>
+    <button onclick="downloadCSV()">Download CSV</button>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('loveChart').getContext('2d');
+    let events = JSON.parse(localStorage.getItem('loveEvents')) || [
+      { date: '2023-16-06', label: 'First Date', value: 20 },
+      { date: "2023-10-01", desc: "He was abroad without me", value: -15 },
+      { date: "2024-01-05", desc: "Had a fight sorta", value: -10 },
+      { date: "2024-05-01", desc: "Went to theater", value: 15 },
+      { date: "2024-05-09", desc: "Italy trip", value: 20 },
+      { date: "2024-05-16", desc: "Went to theater again", value: 15 },
+      { date: "2024-05-23", desc: "Went to my house", value: 5 },
+      { date: "2024-06-01", desc: "His birthday celebrations", value: 10 },
+      { date: "2024-12-08", desc: "Visited his house", value: 3 },
+      { date: "2025-01-29", desc: "Went to theater", value: 15 },
+      { date: "2025-04-22", desc: "I was abroad without him", value: -15 },
+      { date: "2025-05-08", desc: "He made me upset", value: -10 },
+      { date: "2025-05-11", desc: "Greece trip begins", value: 20 },
+      { date: "2025-05-25", desc: "I was abroad without him again", value: -15 },
+      { date: "2025-06-05", desc: "Stayed at my house again", value: 5 }
+    ];
+
+    function sortEvents() {
+      events.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    function calculateLoveValues() {
+      let value = 100;
+      return events.map(e => value += e.value);
+    }
+
+    function updateChart() {
+      sortEvents();
+      const labels = events.map(e => `${e.date} - ${e.desc}`);
+      const data = calculateLoveValues();
+
+      loveChart.data.labels = labels;
+      loveChart.data.datasets[0].data = data;
+      loveChart.update();
+
+      localStorage.setItem('loveEvents', JSON.stringify(events));
+    }
+
+    const loveChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Love Value Over Time',
+          data: [],
+          borderColor: '#ff6384',
+          backgroundColor: 'rgba(255, 99, 132, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
+    });
+
+    function addEvent() {
+      const date = document.getElementById('eventDate').value;
+      const desc = document.getElementById('eventDesc').value.trim();
+      const value = parseInt(document.getElementById('eventValue').value);
+
+      if (!date || !desc || isNaN(value)) return alert('Please fill out all fields.');
+
+      events.push({ date, desc, value });
+      updateChart();
+    }
+
+    function undoEvent() {
+      events.pop();
+      updateChart();
+    }
+
+    function clearAll() {
+      if (confirm("Are you sure you want to clear all data?")) {
+        events = [];
+        updateChart();
+      }
+    }
+
+    function downloadCSV() {
+      let csv = "Date,Description,Value\n";
+      events.forEach(e => {
+        csv += `${e.date},"${e.desc}",${e.value}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "love_portfolio.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Initial chart update
+    updateChart();
+  </script>
+</body>
+</html>
