@@ -15,7 +15,7 @@ Inspired by your passions — **investing and finance** — I built a personal w
 - 📅 **Date-aware timeline** — Every moment is tracked with its exact date and sorted chronologically.
 - 📝 **Event logging** — Add sweet or not-so-sweet events with custom labels and love value changes.
 - 🔁 **Live updating graph** — Watch our “love index” change over time.
-- 💾 **Auto-saving** — Data is saved automatically to the browser with localStorage.
+- 💾 **Auto-saving** — Data is saved automatically to the Google Sheets page I created.
 - ↩️ **Undo & Reset** — Fix mistakes or start fresh if needed.
 - 📤 **CSV Export** — Download all your data at any time to save or share.
 
@@ -28,7 +28,7 @@ Inspired by your passions — **investing and finance** — I built a personal w
 
 ## 💡 How to Use
 
-1. Open `love_portfolio_interactive.html` in any modern browser.
+1. Click this link: https://michellerivk.github.io/PFOR/index.html
 2. Add events by entering a date, description, and change in value.
 3. The chart will update instantly and save your changes.
 4. You can undo the last event, clear everything, or download your data as a CSV.
