@@ -46,7 +46,7 @@
 </head>
 <body>
 
-  <div class="ticker">LOVE +387% | HUGS issuing emotional dividends | $US2 at all-time highs</div>
+  <div class="ticker">LOVE +387% | HUGS issuing emotional dividends | $E&M at all-time highs</div>
   <h1>Our Love Portfolio 📈❤️</h1>
 
   <div id="chart-container">
@@ -117,17 +117,7 @@
       loveChart.data.datasets[0].data = data;
       loveChart.update();
     }
-
-    function fetchEvents() {
-      fetch(scriptURL)
-        .then(res => res.json())
-        .then(data => {
-          events = data;
-          updateChart();
-        })
-        .catch(err => console.error('Failed to fetch events:', err));
-    }
-
+    
     function addEvent() {
   const date = document.getElementById('eventDate').value;
   const desc = document.getElementById('eventDesc').value.trim();
