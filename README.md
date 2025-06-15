@@ -28,7 +28,7 @@ Inspired by your passions — **investing and finance** — I built a personal w
 
 ## 💡 How to Use
 
-1. Click this link: https://michellerivk.github.io/PFOR/index.html
+1. Click this link: https://michellerivk.github.io/PFOR/love.html
 2. Add events by entering a date, description, and change in value.
 3. The chart will update instantly and save your changes.
 4. You can undo the last event, clear everything, or download your data as a CSV.
