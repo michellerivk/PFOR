@@ -136,15 +136,14 @@
       if (!date || !desc || isNaN(value)) return alert('Please fill out all fields.');
 
       fetch(scriptURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, desc, value })
-      })
-      .then(() => {
-        fetchEvents(); // Reload chart after adding
-      })
-      .catch(err => console.error('Failed to add event:', err));
-    }
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ date, desc, value })
+})
+.then(() => {
+  fetchEvents(); // reload data from sheet
+})
+.catch(err => console.error('Failed to add event:', err));
 
     function downloadCSV() {
       let csv = "Date,Description,Value\n";
