@@ -42,12 +42,38 @@
       padding: 10px;
       margin-bottom: 20px;
     }
+
+    .loader-container {
+      display: none;
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 6px solid #ff99aa;
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 
   <div class="ticker">LOVE +387% | HUGS issuing emotional dividends | $E&M at all-time highs</div>
   <h1>Our Love Portfolio 📈❤️</h1>
+
+  <div id="loading" class="loader-container">
+    <div class="spinner"></div>
+    <div style="margin-top: 10px;">Loading your love history...</div>
+  </div>
 
   <div id="chart-container">
     <canvas id="loveChart"></canvas>
@@ -65,7 +91,7 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwofNQk-H-6E_d506F5-oLZO4FFUuUBMTnjxqxeDZlzYMNPdMRCoxavmzwrheJCeprLQw/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwk7bY9P33AgZWm7evQKitLaQU94xg0jMW9HhR0BKTpMh7USzpdATYqUqO0zRaKq2ZfvQ/exec";
     let events = [];
 
     const ctx = document.getElementById('loveChart').getContext('2d');
@@ -84,9 +110,7 @@
       },
       options: {
         scales: {
-          y: {
-            beginAtZero: true
-          }
+          y: { beginAtZero: true }
         }
       }
     });
@@ -103,70 +127,67 @@
     function updateChart() {
       sortEvents();
       const labels = events.map(e => {
-      const rawDate = new Date(e.date);
-      if (isNaN(rawDate.getTime())) {
-        // fallback in case parsing fails
-        return `${e.date} - ${e.desc}`;
-      }
-      const formatted = rawDate.toISOString().split("T")[0];
-      return `${formatted} - ${e.desc}`;
-    });
+        const rawDate = new Date(e.date);
+        if (isNaN(rawDate.getTime())) return `${e.date} - ${e.desc}`;
+        const formatted = rawDate.toISOString().split("T")[0];
+        return `${formatted} - ${e.desc}`;
+      });
       const data = calculateLoveValues();
 
       loveChart.data.labels = labels;
       loveChart.data.datasets[0].data = data;
       loveChart.update();
     }
-    
+
+    function fetchEvents() {
+      document.getElementById('loading').style.display = 'block';
+      fetch(scriptURL)
+        .then(res => res.json())
+        .then(data => {
+          events = data;
+          updateChart();
+        })
+        .catch(err => console.error('Failed to fetch events:', err))
+        .finally(() => {
+          document.getElementById('loading').style.display = 'none';
+        });
+    }
+
     function addEvent() {
-  const date = document.getElementById('eventDate').value;
-  const desc = document.getElementById('eventDesc').value.trim();
-  const value = parseInt(document.getElementById('eventValue').value);
+      const date = document.getElementById('eventDate').value;
+      const desc = document.getElementById('eventDesc').value.trim();
+      const value = parseInt(document.getElementById('eventValue').value);
 
-  if (!date || !desc || isNaN(value)) {
-    alert("Please fill out all fields.");
-    return;
-  }
+      if (!date || !desc || isNaN(value)) {
+        alert("Please fill out all fields.");
+        return;
+      }
 
-  fetch(scriptURL, {
-    method: "POST",
-    redirect: "follow", // 🔑 VERY important for Apps Script
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8" // 🔑 Triggers NO preflight
-    },
-    body: JSON.stringify({ date, desc, value })
-  })
-    .then(() => fetchEvents())
-    .catch(err => console.error("Failed to add event:", err));
-}
+      fetch(scriptURL, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ date, desc, value })
+      })
+      .then(() => fetchEvents())
+      .catch(err => console.error("Failed to add event:", err));
+    }
 
+    function downloadCSV() {
+      let csv = "Date,Description,Value\n";
+      events.forEach(e => {
+        csv += `${e.date},"${e.desc}",${e.value}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "love_portfolio.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
 
-function downloadCSV() {
-  let csv = "Date,Description,Value\\n";
-  events.forEach(e => {
-    csv += `${e.date},"${e.desc}",${e.value}\\n`;
-  });
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "love_portfolio.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function fetchEvents() {
-  fetch(scriptURL)
-    .then(res => res.json())
-    .then(data => {
-      events = data;
-      updateChart();
-    })
-    .catch(err => console.error('Failed to fetch events:', err));
-}
-
-// Load events on startup
-fetchEvents();
+    fetchEvents();
   </script>
 </body>
 </html>
