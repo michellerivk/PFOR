@@ -123,18 +123,23 @@
   const desc = document.getElementById('eventDesc').value.trim();
   const value = parseInt(document.getElementById('eventValue').value);
 
-  if (!date || !desc || isNaN(value)) return alert('Please fill out all fields.');
+  if (!date || !desc || isNaN(value)) {
+    alert("Please fill out all fields.");
+    return;
+  }
 
   fetch(scriptURL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    redirect: "follow", // 🔑 VERY important for Apps Script
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8" // 🔑 Triggers NO preflight
+    },
     body: JSON.stringify({ date, desc, value })
   })
-  .then(() => {
-    fetchEvents(); // reload data from sheet
-  })
-  .catch(err => console.error('Failed to add event:', err));
-} // ← this brace was missing
+    .then(() => fetchEvents())
+    .catch(err => console.error("Failed to add event:", err));
+}
+
 
 function downloadCSV() {
   let csv = "Date,Description,Value\\n";
